@@ -7,3 +7,10 @@ datasource db {
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
+
+model Exercise {
+  id       String   @id @default(uuid())
+  name     String   @unique
+  category String
+  muscles  String[]
+}

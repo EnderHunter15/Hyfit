@@ -19,5 +19,9 @@ export default function WorkoutTimer() {
     ).padStart(2, '0')}`;
   };
 
-  return <span className='text-sm text-muted-foreground'>{formatTime(seconds)}</span>;
+  return (
+    <div className='inline-flex items-center justify-center px-4 py-2 text-lg font-mono font-semibold tracking-widest bg-muted  shadow-sm rounded-3xl'>
+      ⏱ {formatTime(seconds)}
+    </div>
+  );
 }
