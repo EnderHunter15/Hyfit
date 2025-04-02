@@ -22,16 +22,8 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { Separator } from "@radix-ui/react-separator";
-import { Input } from "@/components/ui/input";
-import Image from "next/image";
 
-export default function WorkoutPage({
-  search,
-  setSearch,
-}: {
-  search: string;
-  setSearch: (search: string) => void;
-}) {
+export default function WorkoutPage() {
   const [open, setOpen] = useState(false);
   const [workoutFinished, setWorkoutFinished] = useState(false);
   return (
@@ -66,20 +58,9 @@ export default function WorkoutPage({
               <SheetContent className="w-full">
                 <SheetHeader className="flex items-center">
                   <SheetTitle>
-                    <Input
-                      className="text-primary w-full rounded-3xl p-4"
-                      placeholder="Search exercise"
-                      value={search}
-                      onChange={(e) => setSearch(e.target.value)}
-                    />
-                    <Separator className="bg-primary mt-2 rounded-2xl p-[2px]" />
+                    <AddExerciseModal />
                   </SheetTitle>
                 </SheetHeader>
-                <AddExerciseModal
-                  onSelect={(exercise) => {
-                    console.log("Selected exercise:", exercise);
-                  }}
-                />
               </SheetContent>
             </Sheet>
           </div>
