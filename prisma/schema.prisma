@@ -8,9 +8,11 @@ datasource db {
     directUrl = env("DIRECT_URL")
 }
 
-model Post {
-    id        Int      @id @default(autoincrement())
-    name      String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+model Exercise {
+    id          String   @id @default(uuid())
+    name        String
+    muscleGroup String
+    iconUrl     String?
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
 }

@@ -1,5 +1,6 @@
 "use client";
 
+import AddExerciseModal from "@/components/addExerciseModal";
 import { Send } from "lucide-react";
 import { useState } from "react";
 import WorkoutTimer from "@/components/workoutTimer";
@@ -22,8 +23,15 @@ import {
 } from "@/components/ui/drawer";
 import { Separator } from "@radix-ui/react-separator";
 import { Input } from "@/components/ui/input";
+import Image from "next/image";
 
-export default function WorkoutPage() {
+export default function WorkoutPage({
+  search,
+  setSearch,
+}: {
+  search: string;
+  setSearch: (search: string) => void;
+}) {
   const [open, setOpen] = useState(false);
   const [workoutFinished, setWorkoutFinished] = useState(false);
   return (
@@ -61,11 +69,17 @@ export default function WorkoutPage() {
                     <Input
                       className="text-primary w-full rounded-3xl p-4"
                       placeholder="Search exercise"
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
                     />
                     <Separator className="bg-primary mt-2 rounded-2xl p-[2px]" />
                   </SheetTitle>
                 </SheetHeader>
-                {/* { render exercises} */}
+                <AddExerciseModal
+                  onSelect={(exercise) => {
+                    console.log("Selected exercise:", exercise);
+                  }}
+                />
               </SheetContent>
             </Sheet>
           </div>
