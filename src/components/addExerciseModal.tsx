@@ -32,7 +32,7 @@ export default function AddExerciseModal({
         />
         <Separator className="bg-primary mt-2 rounded-2xl p-[2px]" />
       </div>
-      <ScrollArea className="h-[95vh] w-screen rounded-md border border-none p-4">
+      <ScrollArea className="h-[90vh] w-screen rounded-md border border-none p-4">
         <div className="mt-4 flex flex-col gap-3 overflow-y-auto">
           {isLoading ? (
             <WorkoutLoading />
@@ -82,6 +82,7 @@ export default function AddExerciseModal({
               </div>
             ))
           )}
+          <Separator className="bg-primary mt-2 rounded-2xl p-[2px]" />
         </div>
       </ScrollArea>
     </>
