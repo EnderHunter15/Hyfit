@@ -5,6 +5,7 @@ import { Geist } from "next/font/google";
 
 import { TRPCReactProvider } from "@/trpc/react";
 import Dock from "@/components/dock";
+import { WorkoutProvider } from "@/context/workoutContext";
 
 export const metadata: Metadata = {
   title: "Hyfit",
@@ -24,10 +25,12 @@ export default function RootLayout({
     <html lang="en" className={`${geist.variable}`}>
       <body className="text-primary">
         <TRPCReactProvider>
-          <div className="bg-background absolute inset-0 -z-10 h-full w-full">
-            {children}
-            <Dock />
-          </div>
+          <WorkoutProvider>
+            <div className="bg-background absolute inset-0 -z-10 h-full w-full">
+              {children}
+              <Dock />
+            </div>
+          </WorkoutProvider>
         </TRPCReactProvider>
       </body>
     </html>

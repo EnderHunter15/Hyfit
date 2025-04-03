@@ -21,11 +21,15 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
+import { useWorkoutContext } from "@/context/workoutContext";
+
 import { Separator } from "@radix-ui/react-separator";
 
 export default function WorkoutPage() {
+  const { workoutExercises } = useWorkoutContext();
   const [open, setOpen] = useState(false);
   const [workoutFinished, setWorkoutFinished] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(false);
   return (
     <div className="bg-background flex h-full min-h-screen w-full flex-col items-center p-6">
       <Drawer
@@ -50,25 +54,35 @@ export default function WorkoutPage() {
               orientation="horizontal"
             />
           </DrawerHeader>
+          <div className="flex flex-col">
+            {workoutExercises.map((exercise) => {
+              const { name, iconUrl, id } = exercise;
+              return <div key={id}>{name}</div>;
+            })}
+          </div>
           <div className="flex flex-col items-center">
-            <Sheet>
+            <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
               <SheetTrigger asChild>
-                <Button className="w-1/2 rounded-2xl">Add an exercise</Button>
+                <Button className="mt-4 w-1/2 rounded-2xl">
+                  Add an exercise
+                </Button>
               </SheetTrigger>
               <SheetContent className="w-full">
                 <SheetHeader className="flex items-center">
                   <SheetTitle>
-                    <AddExerciseModal />
+                    <AddExerciseModal setSheetOpen={setSheetOpen} />
                   </SheetTitle>
                 </SheetHeader>
               </SheetContent>
             </Sheet>
           </div>
+
           <DrawerFooter className="mt-auto">
             <Button
               onClick={() => {
                 setOpen(false);
                 setWorkoutFinished(true);
+                workoutExercises.length = 0;
               }}
             >
               Complete workout <Send />
