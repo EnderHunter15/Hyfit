@@ -19,3 +19,15 @@ export type WorkoutExercise = {
   muscles: string;
   iconUrl?: string;
 };
+
+export type SetRow = {
+  kg: string;
+  reps: string;
+  confirmed: boolean;
+};
+
+export type ExerciseProps = {
+  id: string;
+  name: string;
+  iconUrl?: string;
+};

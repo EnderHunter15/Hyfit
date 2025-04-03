@@ -24,6 +24,8 @@ import {
 import { useWorkoutContext } from "@/context/workoutContext";
 
 import { Separator } from "@radix-ui/react-separator";
+import ExerciseLogCard from "@/components/exerciseLogCard";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function WorkoutPage() {
   const { workoutExercises } = useWorkoutContext();
@@ -54,11 +56,12 @@ export default function WorkoutPage() {
               orientation="horizontal"
             />
           </DrawerHeader>
-          <div className="flex flex-col">
-            {workoutExercises.map((exercise) => {
-              const { name, iconUrl, id } = exercise;
-              return <div key={id}>{name}</div>;
-            })}
+          <div className="flex-1 overflow-y-auto">
+            <ScrollArea className="h-full w-full space-y-4 pr-2">
+              {workoutExercises.map((exercise) => (
+                <ExerciseLogCard key={exercise.id} exercise={exercise} />
+              ))}
+            </ScrollArea>
           </div>
           <div className="flex flex-col items-center">
             <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
@@ -77,7 +80,7 @@ export default function WorkoutPage() {
             </Sheet>
           </div>
 
-          <DrawerFooter className="mt-auto">
+          <DrawerFooter className="mt-auto pt-4">
             <Button
               onClick={() => {
                 setOpen(false);
