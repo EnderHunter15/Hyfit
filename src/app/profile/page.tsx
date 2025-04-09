@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 
 export default function ProfileStats() {
-  const streak: number = 3;
+  const streak = 3 as number;
   const totalKg = 1580;
   const totalReps = 340;
   const mostWorked = "Back";
