@@ -11,8 +11,17 @@ datasource db {
 model Exercise {
     id          String   @id @default(uuid())
     name        String
-    muscleGroup String
+    muscleGroup String?
     iconUrl     String?
     createdAt   DateTime @default(now())
     updatedAt   DateTime @updatedAt
+
+    workouts Workout[]
+}
+
+model Workout {
+    id       String @id @default(uuid())
+    duration Int
+
+    exercises Exercise[]
 }

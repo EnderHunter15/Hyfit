@@ -26,12 +26,16 @@ import { useWorkoutContext } from "@/context/workoutContext";
 import { Separator } from "@radix-ui/react-separator";
 import ExerciseLogCard from "@/components/exerciseLogCard";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { api } from "@/trpc/react";
 
 export default function WorkoutPage() {
   const { workoutExercises } = useWorkoutContext();
   const [open, setOpen] = useState(false);
   const [workoutFinished, setWorkoutFinished] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
+
+  const createWorkout = api.workout.createWorkout.useMutation();
+
   return (
     <div className="bg-background flex h-full min-h-screen w-full flex-col items-center p-6">
       <Drawer
@@ -49,7 +53,7 @@ export default function WorkoutPage() {
         <DrawerContent className="bg-background flex h-[90vh] p-4">
           <DrawerHeader className="flex flex-col items-center">
             <DrawerTitle>Current Session</DrawerTitle>
-            <DrawerDescription>This action cannot be undone.</DrawerDescription>
+            <DrawerDescription>Add exercises to your workout</DrawerDescription>
             <WorkoutTimer />
             <Separator
               className="bg-primary mt-2 w-full rounded-2xl p-[2px]"
