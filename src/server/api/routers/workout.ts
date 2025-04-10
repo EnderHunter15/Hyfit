@@ -9,23 +9,34 @@ export const workoutRouter = createTRPCRouter({
         exercises: z.array(
           z.object({
             exerciseId: z.string(),
-            name: z.string(),
-            muscleGroup: z.string(),
+            sets: z.array(
+              z.object({
+                kg: z.number(),
+                reps: z.number(),
+              }),
+            ),
           }),
         ),
       }),
     )
-    .mutation(async ({ ctx, input }) => {
-      return ctx.db.workout.create({
+    .mutation(async ({ input, ctx }) => {
+      const workout = await ctx.db.workout.create({
         data: {
-          duration: 100,
+          duration: input.duration,
           exercises: {
             create: input.exercises.map((ex) => ({
-              connect: { id: ex.exerciseId },
-              name: ex.name,
+              exercise: { connect: { id: ex.exerciseId } },
+              sets: {
+                create: ex.sets.map((set) => ({
+                  kg: set.kg,
+                  reps: set.reps,
+                })),
+              },
             })),
           },
         },
       });
+
+      return workout;
     }),
 });

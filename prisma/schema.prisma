@@ -8,20 +8,36 @@ datasource db {
     directUrl = env("DIRECT_URL")
 }
 
+model Workout {
+    id        String            @id @default(uuid())
+    duration  Int
+    createdAt DateTime          @default(now())
+    exercises WorkoutExercise[]
+}
+
 model Exercise {
-    id          String   @id @default(uuid())
+    id          String            @id @default(uuid())
     name        String
     muscleGroup String?
     iconUrl     String?
-    createdAt   DateTime @default(now())
-    updatedAt   DateTime @updatedAt
-
-    workouts Workout[]
+    createdAt   DateTime          @default(now())
+    updatedAt   DateTime          @updatedAt
+    workouts    WorkoutExercise[]
 }
 
-model Workout {
-    id       String @id @default(uuid())
-    duration Int
+model WorkoutExercise {
+    id         String     @id @default(uuid())
+    workout    Workout    @relation(fields: [workoutId], references: [id])
+    workoutId  String
+    exercise   Exercise   @relation(fields: [exerciseId], references: [id])
+    exerciseId String
+    sets       SetEntry[]
+}
 
-    exercises Exercise[]
+model SetEntry {
+    id                String          @id @default(uuid())
+    kg                Int
+    reps              Int
+    workoutExercise   WorkoutExercise @relation(fields: [workoutExerciseId], references: [id])
+    workoutExerciseId String
 }

@@ -7,6 +7,7 @@ type WorkoutContextType = {
   workoutExercises: WorkoutExercise[];
   addExercise: (exercise: WorkoutExercise) => void;
   setWorkoutExercises: React.Dispatch<React.SetStateAction<WorkoutExercise[]>>;
+  clearWorkout: () => void;
 };
 
 const WorkoutContext = createContext<WorkoutContextType | null>(null);
@@ -26,9 +27,18 @@ export const WorkoutProvider = ({
     );
   };
 
+  const clearWorkout = () => {
+    setWorkoutExercises([]);
+  };
+
   return (
     <WorkoutContext.Provider
-      value={{ workoutExercises, addExercise, setWorkoutExercises }}
+      value={{
+        workoutExercises,
+        addExercise,
+        setWorkoutExercises,
+        clearWorkout,
+      }}
     >
       {children}
     </WorkoutContext.Provider>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -6,13 +6,17 @@ import Image from "next/image";
 import type { SetRow } from "@/utils/types";
 import type { ExerciseProps } from "@/utils/types";
 
+interface Props {
+  exercise: ExerciseProps;
+  updateExerciseSets: (exerciseId: string, sets: SetRow[]) => void;
+}
+
 export default function ExerciseLogCard({
   exercise,
-}: {
-  exercise: ExerciseProps;
-}) {
+  updateExerciseSets,
+}: Props) {
   const [sets, setSets] = useState<SetRow[]>([
-    { kg: "", reps: "", confirmed: false },
+    { kg: 0, reps: 0, confirmed: false },
   ]);
 
   const updateSet = (
@@ -21,23 +25,34 @@ export default function ExerciseLogCard({
     value: string,
   ) => {
     const updated = [...sets];
-    if (updated[index])
+    if (updated[index]) {
       updated[index] = {
         ...updated[index],
         [key]: value,
       };
-    setSets(updated);
+      setSets(updated);
+      updateExerciseSets(exercise.id, updated);
+    }
   };
 
   const toggleConfirm = (index: number) => {
     const updated = [...sets];
-    if (updated[index]) updated[index].confirmed = !updated[index].confirmed;
-    setSets(updated);
+    if (updated[index]) {
+      updated[index].confirmed = !updated[index].confirmed;
+      setSets(updated);
+      updateExerciseSets(exercise.id, updated);
+    }
   };
 
   const addSet = () => {
-    setSets([...sets, { kg: "", reps: "", confirmed: false }]);
+    const updated = [...sets, { kg: 0, reps: 0, confirmed: false }];
+    setSets(updated);
+    updateExerciseSets(exercise.id, updated);
   };
+
+  useEffect(() => {
+    updateExerciseSets(exercise.id, sets);
+  }, [sets]);
 
   return (
     <div className="bg-muted/10 w-full max-w-md space-y-4 rounded-xl p-4 shadow">

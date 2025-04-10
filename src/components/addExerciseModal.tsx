@@ -73,6 +73,7 @@ export default function AddExerciseModal({
                       name: exercise.name,
                       muscles: exercise.muscleGroup ?? "",
                       iconUrl: exercise.iconUrl ?? undefined,
+                      sets: [],
                     });
                     setSheetOpen(false);
                   }}

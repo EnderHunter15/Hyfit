@@ -18,11 +18,12 @@ export type WorkoutExercise = {
   name: string;
   muscles: string;
   iconUrl?: string;
+  sets: SetRow[];
 };
 
 export type SetRow = {
-  kg: string;
-  reps: string;
+  kg: number;
+  reps: number;
   confirmed: boolean;
 };
 
