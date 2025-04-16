@@ -1,15 +1,18 @@
 "use client";
 
 import { Flame, Dumbbell, BarChart3, BicepsFlexed } from "lucide-react";
-
+import { api } from "@/trpc/react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import ProfileStatsLoading from "./profileStatsLoading";
 
 export default function ProfileStats() {
-  const streak = 3 as number;
-  const totalKg = 1580;
-  const totalReps = 340;
-  const mostWorked = "Back";
+  const { data: stats } = api.workout.getStats.useQuery();
+
+  const { streak, totalKg, totalReps, mostWorked } = stats ?? {};
+  if (stats === undefined) {
+    return <ProfileStatsLoading />;
+  }
 
   return (
     <div className="flex h-screen w-full flex-col gap-4 overflow-y-auto p-4 pb-28">

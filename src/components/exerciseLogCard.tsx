@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -49,10 +49,6 @@ export default function ExerciseLogCard({
     setSets(updated);
     updateExerciseSets(exercise.id, updated);
   };
-
-  useEffect(() => {
-    updateExerciseSets(exercise.id, sets);
-  }, [sets]);
 
   return (
     <div className="bg-muted/10 w-full max-w-md space-y-4 rounded-xl p-4 shadow">
