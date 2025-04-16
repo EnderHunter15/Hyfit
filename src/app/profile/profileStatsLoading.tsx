@@ -6,7 +6,6 @@ import { Separator } from "@/components/ui/separator";
 export default function ProfileStatsLoading() {
   return (
     <div className="flex h-screen w-full flex-col gap-4 overflow-y-auto p-4 pb-28">
-      {/* Profile Info */}
       <div className="flex justify-center">Your Profile</div>
 
       <Separator className="bg-primary rounded-2xl p-1" />

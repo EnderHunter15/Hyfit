@@ -71,14 +71,60 @@ export const workoutRouter = createTRPCRouter({
     const mostWorked =
       Object.entries(muscleCount).sort((a, b) => b[1] - a[1])[0]?.[0] ?? "N/A";
 
-    // Placeholder for streak for now
-    const streak = 3;
+    const workoutDates = Array.from(
+      new Set(
+        workouts
+          .map((w) => w.createdAt?.toISOString().split("T")[0])
+          .filter((date): date is string => date !== undefined),
+      ),
+    ).sort((a, b) => (a > b ? -1 : 1));
+
+    let streak = 0;
+    const currentDate = new Date();
+
+    for (const dateStr of workoutDates) {
+      const workoutDate = new Date(dateStr);
+
+      const currentMidnight = new Date(
+        currentDate.getFullYear(),
+        currentDate.getMonth(),
+        currentDate.getDate(),
+      );
+      const workoutMidnight = new Date(
+        workoutDate.getFullYear(),
+        workoutDate.getMonth(),
+        workoutDate.getDate(),
+      );
+
+      if (currentMidnight.getTime() === workoutMidnight.getTime()) {
+        streak++;
+        currentDate.setDate(currentDate.getDate() - 1);
+      } else {
+        break;
+      }
+    }
+
+    const totalDurationSeconds = workouts.reduce(
+      (sum, w) => sum + (w.duration ?? 0),
+      0,
+    );
+
+    function formatDuration(seconds: number) {
+      const days = Math.floor(seconds / 86400);
+      const hours = Math.floor((seconds % 86400) / 3600);
+      const minutes = Math.floor((seconds % 3600) / 60);
+
+      if (days > 0) return `${days}d ${hours}h ${minutes}m`;
+      if (hours > 0) return `${hours}h ${minutes}m`;
+      return `${minutes}m`;
+    }
 
     return {
       totalKg,
       totalReps,
       mostWorked,
       streak,
+      totalDuration: formatDuration(totalDurationSeconds),
     };
   }),
 });

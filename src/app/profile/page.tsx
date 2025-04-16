@@ -1,6 +1,6 @@
 "use client";
 
-import { Flame, Dumbbell, BarChart3, BicepsFlexed } from "lucide-react";
+import { Flame, Dumbbell, BarChart3, BicepsFlexed, Clock } from "lucide-react";
 import { api } from "@/trpc/react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -9,7 +9,7 @@ import ProfileStatsLoading from "./profileStatsLoading";
 export default function ProfileStats() {
   const { data: stats } = api.workout.getStats.useQuery();
 
-  const { streak, totalKg, totalReps, mostWorked } = stats ?? {};
+  const { streak, totalKg, totalReps, mostWorked, totalDuration } = stats ?? {};
   if (stats === undefined) {
     return <ProfileStatsLoading />;
   }
@@ -79,14 +79,18 @@ export default function ProfileStats() {
         </CardContent>
       </Card>
 
-      {/* Weekly Tracker */}
+      {/* Total Time */}
       <Card className="rounded-3xl">
-        <CardContent className="p-4">
-          <p className="text-muted-foreground mb-2 text-sm">Weekly Activity</p>
-          <div className="grid grid-cols-7 gap-2">RENDER DAYS</div>
-          <p className="text-muted-foreground mt-2 text-xs italic">
-            Tap a skipped day to mark it as a rest day.
-          </p>
+        <CardContent className="flex items-center justify-between p-4">
+          <div>
+            <p className="text-muted-foreground text-sm">
+              Total Time Spent Training
+            </p>
+            <h2 className="text-primary text-2xl font-semibold">
+              {totalDuration}
+            </h2>
+          </div>
+          <Clock className="text-primary h-6 w-6" />
         </CardContent>
       </Card>
     </div>
