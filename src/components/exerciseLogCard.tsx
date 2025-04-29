@@ -104,14 +104,14 @@ export default function ExerciseLogCard({
             {index + 1}
           </span>
           <Input
-            type="number"
+            inputMode="numeric"
             className="bg-background text-foreground w-full rounded-xl text-center"
             value={set.kg}
             placeholder="-"
             onChange={(e) => updateSet(index, "kg", e.target.value)}
           />
           <Input
-            type="number"
+            inputMode="numeric"
             className="bg-background text-foreground w-full rounded-xl text-center"
             value={set.reps}
             placeholder="-"
