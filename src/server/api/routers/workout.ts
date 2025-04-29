@@ -1,8 +1,8 @@
-import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
+import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { z } from "zod";
 
 export const workoutRouter = createTRPCRouter({
-  createWorkout: publicProcedure
+  createWorkout: protectedProcedure
     .input(
       z.object({
         duration: z.number(),
@@ -20,9 +20,14 @@ export const workoutRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ input, ctx }) => {
+      const userId = ctx.userId;
+
+      if (!userId) throw new Error("Unauthorized");
+
       const workout = await ctx.db.workout.create({
         data: {
           duration: input.duration,
+          userId,
           exercises: {
             create: input.exercises.map((ex) => ({
               exercise: { connect: { id: ex.exerciseId } },
@@ -40,8 +45,13 @@ export const workoutRouter = createTRPCRouter({
       return workout;
     }),
 
-  getStats: publicProcedure.query(async ({ ctx }) => {
+  getStats: protectedProcedure.query(async ({ ctx }) => {
+    const userId = ctx.userId;
+
+    if (!userId) throw new Error("Unauthorized");
+
     const workouts = await ctx.db.workout.findMany({
+      where: { userId },
       include: {
         exercises: {
           include: {

@@ -45,6 +45,10 @@ export default function WorkoutPage() {
     );
   };
 
+  const removeExercise = (exerciseId: string) => {
+    setWorkoutExercises((prev) => prev.filter((ex) => ex.id !== exerciseId));
+  };
+
   return (
     <div className="bg-background flex h-full min-h-screen w-full flex-col items-center p-6">
       <Drawer
@@ -77,6 +81,7 @@ export default function WorkoutPage() {
                   key={exercise.id}
                   exercise={exercise}
                   updateExerciseSets={updateExerciseSets}
+                  removeExercise={removeExercise}
                 />
               ))}
             </ScrollArea>

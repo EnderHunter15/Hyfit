@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Check } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Check, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
@@ -9,11 +9,13 @@ import type { ExerciseProps } from "@/utils/types";
 interface Props {
   exercise: ExerciseProps;
   updateExerciseSets: (exerciseId: string, sets: SetRow[]) => void;
+  removeExercise: (exerciseId: string) => void;
 }
 
 export default function ExerciseLogCard({
   exercise,
   updateExerciseSets,
+  removeExercise,
 }: Props) {
   const [sets, setSets] = useState<SetRow[]>([
     { kg: 0, reps: 0, confirmed: false },
@@ -28,10 +30,9 @@ export default function ExerciseLogCard({
     if (updated[index]) {
       updated[index] = {
         ...updated[index],
-        [key]: value,
+        [key]: Number(value),
       };
       setSets(updated);
-      updateExerciseSets(exercise.id, updated);
     }
   };
 
@@ -40,18 +41,30 @@ export default function ExerciseLogCard({
     if (updated[index]) {
       updated[index].confirmed = !updated[index].confirmed;
       setSets(updated);
-      updateExerciseSets(exercise.id, updated);
     }
   };
 
   const addSet = () => {
     const updated = [...sets, { kg: 0, reps: 0, confirmed: false }];
     setSets(updated);
-    updateExerciseSets(exercise.id, updated);
   };
 
+  useEffect(() => {
+    updateExerciseSets(exercise.id, sets);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sets]);
+
   return (
-    <div className="bg-muted/10 w-full max-w-md space-y-4 rounded-xl p-4 shadow">
+    <div className="bg-muted/10 relative w-full max-w-md space-y-4 rounded-xl p-4 shadow">
+      {/* Remove button */}
+      <button
+        onClick={() => removeExercise(exercise.id)}
+        className="bg-muted-foreground/20 text-muted-foreground hover:bg-destructive hover:text-destructive-foreground absolute top-2 right-2 rounded-full p-1 transition"
+      >
+        <X size={16} />
+      </button>
+
+      {/* Exercise Header */}
       <div className="flex items-center gap-4">
         {exercise.iconUrl ? (
           <Image
@@ -71,6 +84,7 @@ export default function ExerciseLogCard({
         </h3>
       </div>
 
+      {/* Sets header */}
       <div className="text-muted-foreground mb-2 grid grid-cols-4 text-xs font-semibold uppercase">
         <span>Set</span>
         <span className="text-center">+kg</span>
@@ -78,6 +92,7 @@ export default function ExerciseLogCard({
         <span className="text-end"></span>
       </div>
 
+      {/* Sets */}
       {sets.map((set, index) => (
         <div
           key={index}
@@ -89,12 +104,14 @@ export default function ExerciseLogCard({
             {index + 1}
           </span>
           <Input
+            type="number"
             className="bg-background text-foreground w-full rounded-xl text-center"
             value={set.kg}
             placeholder="-"
             onChange={(e) => updateSet(index, "kg", e.target.value)}
           />
           <Input
+            type="number"
             className="bg-background text-foreground w-full rounded-xl text-center"
             value={set.reps}
             placeholder="-"
@@ -113,6 +130,7 @@ export default function ExerciseLogCard({
         </div>
       ))}
 
+      {/* Add Set Button */}
       <Button
         variant="outline"
         className="mt-2 w-full rounded-2xl text-sm"

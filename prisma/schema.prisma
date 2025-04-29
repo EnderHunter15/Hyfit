@@ -12,6 +12,7 @@ model Workout {
     id        String            @id @default(uuid())
     duration  Int
     createdAt DateTime          @default(now())
+    userId    String            @unique
     exercises WorkoutExercise[]
 }
 
