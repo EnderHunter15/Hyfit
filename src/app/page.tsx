@@ -1,3 +1,12 @@
+import { auth } from "@clerk/nextjs/server";
+
 export default async function Home() {
-  return <h1>Home</h1>;
+  const { userId } = await auth();
+
+  return (
+    <div>
+      <h1>Welcome</h1>
+      <p>Your user ID is: {userId}</p>
+    </div>
+  );
 }
