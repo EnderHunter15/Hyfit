@@ -10,13 +10,12 @@ import { Button } from "@/components/ui/button";
 
 export default function ProfileStats() {
   const { data: stats } = api.workout.getStats.useQuery();
+  const { user } = useUser();
 
   const { streak, totalKg, totalReps, mostWorked, totalDuration } = stats ?? {};
   if (stats === undefined) {
     return <ProfileStatsLoading />;
   }
-
-  const { user } = useUser();
 
   return (
     <div className="flex h-screen w-full flex-col gap-4 overflow-y-auto p-4 pb-28">

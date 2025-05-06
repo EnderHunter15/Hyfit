@@ -1,5 +1,3 @@
-"use client";
-
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -10,46 +8,16 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Separator } from "@/components/ui/separator";
-import { api } from "@/trpc/react";
-import { useUser } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Info } from "lucide-react";
-import HomeLoading from "./homeLoading";
+import React from "react";
 
-const getColor = (volume: number, max: number): string => {
-  const ratio = volume / max;
-
-  if (volume > 0 && ratio <= 0.2) return "bg-[#4caf50]";
-  if (ratio > 0.8) return "bg-[#b22222]";
-  if (ratio > 0.6) return "bg-[#cc6600]";
-  if (ratio > 0.4) return "bg-[#d4af37]";
-  if (ratio > 0.2) return "bg-[#4caf50]";
-  return "bg-[#555555]";
-};
-
-export default function HomePage() {
-  const { user } = useUser();
-  const userId = user?.id ?? "";
-
-  const { data: heatmap, isLoading } = api.heatmap.getMuscleHeatmap.useQuery({
-    userId,
-    days: 7,
-  });
-
-  const hasData = heatmap && Object.keys(heatmap).length > 0;
-  const typedHeatmap = heatmap ?? {};
-  const maxVolume = hasData ? Math.max(...Object.values(typedHeatmap)) : 0;
-
-  if (isLoading) {
-    return <HomeLoading />;
-  }
-
+export default function homeLoading() {
   return (
     <main className="bg-primary-foreground min-h-screen p-6">
-      <h1 className="text-primary mb-6 text-2xl font-bold">
-        👋 Welcome back, {user?.username}!
-      </h1>
+      <h1 className="text-primary mb-6 text-2xl font-bold">👋 Welcome back!</h1>
       <Separator className="bg-primary mb-6 rounded-2xl p-0.5" />
 
       <div className="text-primary mb-3 flex items-center justify-between text-xl font-semibold">
@@ -115,27 +83,20 @@ export default function HomePage() {
           </AlertDialogContent>
         </AlertDialog>
       </div>
-
-      {hasData ? (
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
-          {Object.entries(typedHeatmap).map(([muscle, volume]) => {
-            const color = getColor(volume, maxVolume);
-            return (
-              <div
-                key={muscle}
-                className={`rounded-2xl p-4 text-center text-xl font-medium text-black shadow transition-all ${color}`}
-              >
-                <div className="uppercase">{muscle}</div>
-                <div className="mt-1 font-mono text-xs">{volume} kg·reps</div>
-              </div>
-            );
-          })}
-        </div>
-      ) : (
-        <div className="text-primary mt-6 text-center text-lg font-semibold">
-          No workout data found. 😅 Start training to see your muscle heatmap!
-        </div>
-      )}
+      <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+        <Skeleton className="h-24 w-full rounded-3xl" />
+        <Skeleton className="h-24 w-full rounded-3xl" />
+        <Skeleton className="h-24 w-full rounded-3xl" />
+        <Skeleton className="h-24 w-full rounded-3xl" />
+        <Skeleton className="h-24 w-full rounded-3xl" />
+        <Skeleton className="h-24 w-full rounded-3xl" />
+        <Skeleton className="h-24 w-full rounded-3xl" />
+        <Skeleton className="h-24 w-full rounded-3xl" />
+        <Skeleton className="h-24 w-full rounded-3xl" />
+        <Skeleton className="h-24 w-full rounded-3xl" />
+        <Skeleton className="h-24 w-full rounded-3xl" />
+        <Skeleton className="h-24 w-full rounded-3xl" />
+      </div>
     </main>
   );
 }
