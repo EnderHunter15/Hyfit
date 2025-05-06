@@ -2,7 +2,7 @@
 
 import { Flame, Dumbbell, BarChart3, BicepsFlexed, Clock } from "lucide-react";
 import { api } from "@/trpc/react";
-import { SignOutButton } from "@clerk/nextjs";
+import { SignOutButton, useUser } from "@clerk/nextjs";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import ProfileStatsLoading from "./profileStatsLoading";
@@ -16,11 +16,15 @@ export default function ProfileStats() {
     return <ProfileStatsLoading />;
   }
 
+  const { user } = useUser();
+
   return (
     <div className="flex h-screen w-full flex-col gap-4 overflow-y-auto p-4 pb-28">
       {/* Profile Info */}
       <div className="bg-background flex items-center justify-between rounded-3xl p-4">
-        <h1 className="text-foreground text-lg font-bold">Your Profile</h1>
+        <h1 className="text-foreground text-lg font-bold">
+          Your Profile, {user?.username}{" "}
+        </h1>
         <Button asChild variant={"destructive"} className="rounded-3xl">
           <SignOutButton>Sign Out</SignOutButton>
         </Button>

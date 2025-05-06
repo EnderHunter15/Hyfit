@@ -3,10 +3,21 @@ import { z } from "zod";
 
 export const heatmapRouter = createTRPCRouter({
   getMuscleHeatmap: protectedProcedure
-    .input(z.object({ userId: z.string() }))
+    .input(
+      z.object({
+        userId: z.string(),
+        days: z.number().optional().default(7),
+      }),
+    )
     .query(async ({ ctx, input }) => {
+      const sinceDate = new Date();
+      sinceDate.setDate(sinceDate.getDate() - input.days);
+
       const workouts = await ctx.db.workout.findMany({
-        where: { userId: input.userId },
+        where: {
+          userId: input.userId,
+          createdAt: { gte: sinceDate },
+        },
         select: {
           exercises: {
             select: {

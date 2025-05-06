@@ -18,11 +18,13 @@ import { Info } from "lucide-react";
 
 const getColor = (volume: number, max: number): string => {
   const ratio = volume / max;
-  if (ratio > 0.8) return "bg-red-600";
-  if (ratio > 0.6) return "bg-orange-500";
-  if (ratio > 0.4) return "bg-yellow-400";
-  if (ratio > 0.2) return "bg-green-400";
-  return "bg-gray-300";
+
+  if (volume > 0 && ratio <= 0.2) return "bg-[#4caf50]";
+  if (ratio > 0.8) return "bg-[#b22222]";
+  if (ratio > 0.6) return "bg-[#cc6600]";
+  if (ratio > 0.4) return "bg-[#d4af37]";
+  if (ratio > 0.2) return "bg-[#4caf50]";
+  return "bg-[#555555]";
 };
 
 export default function HomePage() {
@@ -31,74 +33,112 @@ export default function HomePage() {
 
   const { data: heatmap, isLoading } = api.heatmap.getMuscleHeatmap.useQuery({
     userId,
+    days: 7,
   });
+
+  const hasData = heatmap && Object.keys(heatmap).length > 0;
+  const typedHeatmap = heatmap ?? {};
+  const maxVolume = hasData ? Math.max(...Object.values(typedHeatmap)) : 0;
 
   if (isLoading) {
     return <div className="p-6 text-gray-600">Loading heatmap...</div>;
   }
 
-  if (!heatmap || Object.keys(heatmap).length === 0) {
-    return (
-      <div className="text-primary p-6 text-center text-lg font-semibold">
-        No workout data found. 😅 Start training to see your muscle heatmap!
-      </div>
-    );
-  }
-
-  const typedHeatmap = heatmap;
-  const maxVolume = Math.max(...Object.values(typedHeatmap));
-
   return (
     <main className="bg-primary-foreground min-h-screen p-6">
-      <h1 className="mb-6 text-2xl font-bold">
+      <h1 className="text-primary mb-6 text-2xl font-bold">
         👋 Welcome back, {user?.username}!
       </h1>
       <Separator className="bg-primary mb-6 rounded-2xl p-0.5" />
+
       <section>
-        <div className="mb-3 flex justify-between text-xl font-semibold">
+        <div className="text-primary mb-3 flex items-center justify-between text-xl font-semibold">
           💪 Muscle Activity Heatmap
           <AlertDialog>
             <AlertDialogTrigger asChild>
-              <Info className="size-8" />
+              <button>
+                <Info className="text-primary size-6" />
+              </button>
             </AlertDialogTrigger>
-            <AlertDialogContent>
+
+            <AlertDialogContent className="bg-background border-primary rounded-2xl border shadow-lg">
               <AlertDialogHeader>
-                <AlertDialogTitle>
+                <AlertDialogTitle className="text-primary relative">
                   Color represents muscle intensity total training volume
-                  (weight × reps):
+                  (weight × reps) in the last 7 days:
                 </AlertDialogTitle>
                 <AlertDialogDescription asChild>
-                  <div className="">
-                    🔴 Very High — Most trained muscle <br /> 🟠 High — Heavily
-                    trained
-                    <br /> 🟡 Medium — Moderate effort <br /> 🟢 Low — Lightly
-                    trained <br /> ⚪️ Inactive — Not recently trained
+                  <div className="mt-2 space-y-1 text-sm">
+                    <div>
+                      🔴{" "}
+                      <span className="font-semibold text-red-400">
+                        Very High
+                      </span>{" "}
+                      — Most trained muscle
+                    </div>
+                    <div>
+                      🟠{" "}
+                      <span className="font-semibold text-orange-400">
+                        High
+                      </span>{" "}
+                      — Heavily trained
+                    </div>
+                    <div>
+                      🟡{" "}
+                      <span className="font-semibold text-yellow-300">
+                        Medium
+                      </span>{" "}
+                      — Moderate effort
+                    </div>
+                    <div>
+                      🟢{" "}
+                      <span className="font-semibold text-green-400">Low</span>{" "}
+                      — Lightly trained
+                    </div>
+                    <div>
+                      ⚪️{" "}
+                      <span className="font-semibold text-gray-300">
+                        Inactive
+                      </span>{" "}
+                      — Not recently trained
+                    </div>
                   </div>
                 </AlertDialogDescription>
               </AlertDialogHeader>
-              <AlertDialogFooter>
+              <AlertDialogFooter className="flex items-center">
                 <AlertDialogCancel asChild>
-                  <Button variant={"destructive"}>X</Button>
+                  <Button
+                    variant="destructive"
+                    className="text-primary absolute top-1 right-1 w-1 rounded-2xl border-none"
+                  >
+                    X
+                  </Button>
                 </AlertDialogCancel>
               </AlertDialogFooter>
             </AlertDialogContent>
           </AlertDialog>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
-          {Object.entries(typedHeatmap).map(([muscle, volume]) => {
-            const color = getColor(volume, maxVolume);
-            return (
-              <div
-                key={muscle}
-                className={`rounded-2xl p-4 text-center text-xl font-medium text-black shadow transition-all ${color}`}
-              >
-                <div className="uppercase">{muscle}</div>
-                <div className="mt-1 font-mono text-xs">{volume} kg·reps</div>
-              </div>
-            );
-          })}
-        </div>
+        {hasData ? (
+          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
+            {Object.entries(typedHeatmap).map(([muscle, volume]) => {
+              const color = getColor(volume, maxVolume);
+              return (
+                <div
+                  key={muscle}
+                  className={`rounded-2xl p-4 text-center text-xl font-medium text-black shadow transition-all ${color}`}
+                >
+                  <div className="uppercase">{muscle}</div>
+                  <div className="mt-1 font-mono text-xs">{volume} kg·reps</div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="text-primary mt-6 text-center text-lg font-semibold">
+            No workout data found. 😅 Start training to see your muscle heatmap!
+          </div>
+        )}
       </section>
     </main>
   );

@@ -25,7 +25,7 @@ export default function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en" className={`${geist.variable}`}>
-        <body className="text-primary">
+        <body className="text-primary bg-background">
           <TRPCReactProvider>
             <WorkoutProvider>
               <div className="bg-background absolute inset-0 -z-10 h-full w-full">
