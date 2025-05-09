@@ -106,7 +106,11 @@ export const workoutRouter = createTRPCRouter({
         workoutDate.getDate(),
       );
 
-      if (currentMidnight.getTime() === workoutMidnight.getTime()) {
+      const diffInDays =
+        (currentMidnight.getTime() - workoutMidnight.getTime()) /
+        (1000 * 60 * 60 * 24);
+
+      if (diffInDays <= 2) {
         streak++;
         currentDate.setDate(currentDate.getDate() - 1);
       } else {
@@ -137,4 +141,25 @@ export const workoutRouter = createTRPCRouter({
       totalDuration: formatDuration(totalDurationSeconds),
     };
   }),
+
+  getAllForUser: protectedProcedure
+    .input(z.object({ userId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      return await ctx.db.workout.findMany({
+        where: { userId: input.userId },
+        orderBy: { createdAt: "desc" },
+        select: {
+          id: true,
+          createdAt: true,
+          duration: true,
+          exercises: {
+            select: {
+              id: true,
+              exercise: { select: { name: true } },
+              sets: { select: { id: true, kg: true, reps: true } },
+            },
+          },
+        },
+      });
+    }),
 });

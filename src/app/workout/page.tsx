@@ -28,6 +28,7 @@ import ExerciseLogCard from "@/components/exerciseLogCard";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { api } from "@/trpc/react";
 import type { SetRow } from "@/utils/types";
+import { useUser } from "@clerk/nextjs";
 
 export default function WorkoutPage() {
   const { workoutExercises, setWorkoutExercises, clearWorkout } =
@@ -36,6 +37,13 @@ export default function WorkoutPage() {
   const [workoutFinished, setWorkoutFinished] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [seconds, setSeconds] = useState(0);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const { user } = useUser();
+  const { data: workouts = [], isLoading } = api.workout.getAllForUser.useQuery(
+    {
+      userId: user?.id ?? "",
+    },
+  );
 
   const createWorkout = api.workout.createWorkout.useMutation();
 
@@ -48,6 +56,15 @@ export default function WorkoutPage() {
   const removeExercise = (exerciseId: string) => {
     setWorkoutExercises((prev) => prev.filter((ex) => ex.id !== exerciseId));
   };
+
+  function formatDuration(seconds: number) {
+    const mins = Math.floor(seconds / 60);
+    const hrs = Math.floor(mins / 60);
+    const remainingMins = mins % 60;
+
+    if (hrs > 0) return `${hrs}h ${remainingMins}m`;
+    return `${mins} min`;
+  }
 
   return (
     <div className="bg-background flex h-full min-h-screen w-full flex-col items-center p-6">
@@ -136,6 +153,72 @@ export default function WorkoutPage() {
               Complete workout <Send />
             </Button>
           </DrawerFooter>
+        </DrawerContent>
+      </Drawer>
+      <Drawer open={historyOpen} onOpenChange={setHistoryOpen}>
+        <DrawerTrigger asChild>
+          <Button
+            className="mt-4 w-3/4 rounded-2xl"
+            onClick={() => setHistoryOpen(true)}
+          >
+            View Workout History
+          </Button>
+        </DrawerTrigger>
+
+        <DrawerContent className="bg-background flex h-[90vh] p-4">
+          <DrawerHeader className="flex flex-col items-center">
+            <DrawerTitle>Workout History</DrawerTitle>
+            <DrawerDescription>Your previous sessions</DrawerDescription>
+            <Separator className="bg-primary mt-2 w-full rounded-2xl p-[2px]" />
+          </DrawerHeader>
+
+          <div className="flex-1 overflow-y-auto">
+            <ScrollArea className="h-full w-full space-y-4 pr-2">
+              {isLoading ? (
+                <div className="text-muted-foreground text-sm">
+                  Loading workout history...
+                </div>
+              ) : workouts.length === 0 ? (
+                <div className="text-muted-foreground text-sm">
+                  No workouts yet.
+                </div>
+              ) : (
+                workouts.map((workout) => (
+                  <div
+                    key={workout.id}
+                    className="border-muted bg-muted/10 rounded-xl border p-4 shadow-sm"
+                  >
+                    <div className="text-primary mb-2 flex items-center justify-between border-b pb-1 text-sm font-semibold">
+                      <span>
+                        {new Date(workout.createdAt).toLocaleDateString()}
+                      </span>
+                      <span>{formatDuration(workout.duration)}</span>
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                      {workout.exercises.map((we) => (
+                        <div
+                          key={we.id}
+                          className="bg-background/70 rounded-md p-3 shadow"
+                        >
+                          <h4 className="text-md text-foreground font-semibold">
+                            {we.exercise.name}
+                          </h4>
+                          <ul className="text-muted-foreground mt-1 ml-4 list-disc text-sm">
+                            {we.sets.map((set, idx) => (
+                              <li key={set.id}>
+                                Set {idx + 1}: {set.reps} × {set.kg}kg
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))
+              )}
+            </ScrollArea>
+          </div>
         </DrawerContent>
       </Drawer>
     </div>

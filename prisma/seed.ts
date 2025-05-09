@@ -70,6 +70,48 @@ async function main() {
         iconUrl:
           "https://ujw76y5xdc.ufs.sh/f/dh0CsXkDgDrkSvDkP6yjRUKaP0WGEmJfkOr39vZVhwFpMB5l",
       },
+      {
+        name: "Dips",
+        muscleGroup: "Triceps",
+        iconUrl:
+          "https://ujw76y5xdc.ufs.sh/f/dh0CsXkDgDrkYLnWCKYmrkE2pS436X9xh7TRHwVmc0bNUiJY",
+      },
+      {
+        name: "Shoulder Flys",
+        muscleGroup: "Shoulders",
+        iconUrl:
+          "https://ujw76y5xdc.ufs.sh/f/dh0CsXkDgDrky7YzSwtf0wLhm38irgCQ6WukS5BdFZqo4Xv9",
+      },
+      {
+        name: "Biceps Dumbell Curl",
+        muscleGroup: "Biceps",
+        iconUrl:
+          "https://ujw76y5xdc.ufs.sh/f/dh0CsXkDgDrkbbFn6Yhiu20hca3PtQYXZ6xGWqBelIpvUJOS",
+      },
+      {
+        name: "Seated Crunch Machine",
+        muscleGroup: "Abs",
+        iconUrl:
+          "https://ujw76y5xdc.ufs.sh/f/dh0CsXkDgDrkjnjlKy8bMOYlny9rdCe3JsLzoQ6E0Twiqhku",
+      },
+      {
+        name: "Seated Chest Press",
+        muscleGroup: "Chest",
+        iconUrl:
+          "https://ujw76y5xdc.ufs.sh/f/dh0CsXkDgDrkzVy3Ldi6ULGDginqKxHfFob2vX5JN9chSMrP",
+      },
+      {
+        name: "Leg Press",
+        muscleGroup: "Legs",
+        iconUrl:
+          "https://ujw76y5xdc.ufs.sh/f/dh0CsXkDgDrkjH0DEKV8bMOYlny9rdCe3JsLzoQ6E0Twiqhk",
+      },
+      {
+        name: "Stead Overhead Barbell Shoulder Press",
+        muscleGroup: "Shoulders",
+        iconUrl:
+          "https://ujw76y5xdc.ufs.sh/f/dh0CsXkDgDrkygxphMtf0wLhm38irgCQ6WukS5BdFZqo4Xv9",
+      },
     ],
   });
 

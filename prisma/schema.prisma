@@ -30,7 +30,7 @@ model WorkoutExercise {
     id         String     @id @default(uuid())
     workout    Workout    @relation(fields: [workoutId], references: [id], onDelete: Cascade)
     workoutId  String
-    exercise   Exercise   @relation(fields: [exerciseId], references: [id])
+    exercise   Exercise   @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
     exerciseId String
     sets       SetEntry[]
 }
