@@ -17,13 +17,14 @@ model Workout {
 }
 
 model Exercise {
-    id          String            @id @default(uuid())
-    name        String
-    muscleGroup String?
-    iconUrl     String?
-    createdAt   DateTime          @default(now())
-    updatedAt   DateTime          @updatedAt
-    workouts    WorkoutExercise[]
+    id                      String                    @id @default(uuid())
+    name                    String
+    muscleGroup             String?
+    iconUrl                 String?
+    createdAt               DateTime                  @default(now())
+    updatedAt               DateTime                  @updatedAt
+    workouts                WorkoutExercise[]
+    WorkoutTemplateExercise WorkoutTemplateExercise[]
 }
 
 model WorkoutExercise {
@@ -41,4 +42,43 @@ model SetEntry {
     reps              Int
     workoutExercise   WorkoutExercise @relation(fields: [workoutExerciseId], references: [id], onDelete: Cascade)
     workoutExerciseId String
+}
+
+model UserNutritionGoals {
+    id        String   @id @default(uuid())
+    userId    String   @unique
+    calories  Int
+    protein   Int
+    carbs     Int
+    fat       Int
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model FoodEntry {
+    id       String   @id @default(uuid())
+    userId   String
+    name     String
+    kcal     Int
+    protein  Float
+    carbs    Float
+    fat      Float
+    quantity Float
+    date     DateTime @default(now())
+}
+
+model WorkoutTemplate {
+    id        String                    @id @default(uuid())
+    userId    String
+    name      String
+    exercises WorkoutTemplateExercise[]
+    createdAt DateTime                  @default(now())
+}
+
+model WorkoutTemplateExercise {
+    id         String          @id @default(uuid())
+    template   WorkoutTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+    templateId String
+    exercise   Exercise        @relation(fields: [exerciseId], references: [id])
+    exerciseId String
 }

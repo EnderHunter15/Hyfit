@@ -2,6 +2,10 @@ import { createCallerFactory, createTRPCRouter } from "@/server/api/trpc";
 import { exerciseRouter } from "./routers/exercise";
 import { workoutRouter } from "./routers/workout";
 import { heatmapRouter } from "./routers/heatmap";
+import { nutritionGoalsRouter } from "./routers/nutritionGoals";
+import { foodRouter } from "./routers/food";
+import { workoutTemplateRouter } from "./routers/workoutTemplate";
+import { chatRouter } from "./routers/chatRouter";
 
 /**
  * This is the primary router for your server.
@@ -12,6 +16,10 @@ export const appRouter = createTRPCRouter({
   exercise: exerciseRouter,
   workout: workoutRouter,
   heatmap: heatmapRouter,
+  nutritionGoals: nutritionGoalsRouter,
+  food: foodRouter,
+  workoutTemplate: workoutTemplateRouter,
+  chat: chatRouter,
 });
 
 // export type definition of API

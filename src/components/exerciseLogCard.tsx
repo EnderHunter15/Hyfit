@@ -18,7 +18,7 @@ export default function ExerciseLogCard({
   removeExercise,
 }: Props) {
   const [sets, setSets] = useState<SetRow[]>([
-    { kg: 0, reps: 0, confirmed: false },
+    { kg: "", reps: "", confirmed: false },
   ]);
 
   const updateSet = (
@@ -30,7 +30,7 @@ export default function ExerciseLogCard({
     if (updated[index]) {
       updated[index] = {
         ...updated[index],
-        [key]: Number(value),
+        [key]: value === "" ? "" : Number(value),
       };
       setSets(updated);
     }

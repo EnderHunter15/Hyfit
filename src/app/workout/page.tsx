@@ -1,17 +1,18 @@
 "use client";
 
 import AddExerciseModal from "@/components/addExerciseModal";
-import { Send } from "lucide-react";
-import { useState } from "react";
+import ExerciseLogCard from "@/components/exerciseLogCard";
 import WorkoutTimer from "@/components/workoutTimer";
+import TemplateEditorModal from "@/components/templateEditorModal";
+import { useWorkoutContext } from "@/context/workoutContext";
+import { api } from "@/trpc/react";
+import type { SetRow, WorkoutExercise } from "@/utils/types";
+
+import { useUser } from "@clerk/nextjs";
+import { Send, Plus } from "lucide-react";
+import { useState } from "react";
+
 import { Button } from "@/components/ui/button";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
 import {
   Drawer,
   DrawerContent,
@@ -21,14 +22,15 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { useWorkoutContext } from "@/context/workoutContext";
-
-import { Separator } from "@radix-ui/react-separator";
-import ExerciseLogCard from "@/components/exerciseLogCard";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { api } from "@/trpc/react";
-import type { SetRow } from "@/utils/types";
-import { useUser } from "@clerk/nextjs";
+import { Separator } from "@radix-ui/react-separator";
 
 export default function WorkoutPage() {
   const { workoutExercises, setWorkoutExercises, clearWorkout } =
@@ -38,12 +40,20 @@ export default function WorkoutPage() {
   const [sheetOpen, setSheetOpen] = useState(false);
   const [seconds, setSeconds] = useState(0);
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [templateSheetOpen, setTemplateSheetOpen] = useState(false);
+  const [templateModalOpen, setTemplateModalOpen] = useState(false);
+
   const { user } = useUser();
+
+  const utils = api.useUtils(); // ✅ Added to manually trigger refetch
+
   const { data: workouts = [], isLoading } = api.workout.getAllForUser.useQuery(
     {
       userId: user?.id ?? "",
     },
   );
+
+  const { data: templates = [] } = api.workoutTemplate.getTemplates.useQuery();
 
   const createWorkout = api.workout.createWorkout.useMutation();
 
@@ -57,40 +67,50 @@ export default function WorkoutPage() {
     setWorkoutExercises((prev) => prev.filter((ex) => ex.id !== exerciseId));
   };
 
-  function formatDuration(seconds: number) {
+  const loadTemplate = (templateId: string) => {
+    const template = templates.find((t) => t.id === templateId);
+    if (!template) return;
+
+    const newExercises: WorkoutExercise[] = template.exercises.map((te) => ({
+      id: te.exercise.id,
+      name: te.exercise.name,
+      iconUrl: te.exercise.iconUrl ?? undefined,
+      muscles: "",
+      sets: [{ kg: "", reps: "", confirmed: false }],
+    }));
+
+    setWorkoutExercises(newExercises);
+    setOpen(true);
+    setTemplateSheetOpen(false);
+  };
+
+  const formatDuration = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const hrs = Math.floor(mins / 60);
     const remainingMins = mins % 60;
-
-    if (hrs > 0) return `${hrs}h ${remainingMins}m`;
-    return `${mins} min`;
-  }
+    return hrs > 0 ? `${hrs}h ${remainingMins}m` : `${mins} min`;
+  };
 
   return (
-    <div className="bg-background flex h-full min-h-screen w-full flex-col items-center p-6">
+    <div className="bg-background flex min-h-screen w-full flex-col items-center p-6">
+      {/* START EMPTY WORKOUT */}
       <Drawer
         open={open}
-        onOpenChange={(newState) => {
-          if (!newState && !workoutFinished) return;
-          setOpen(newState);
-        }}
+        onOpenChange={(state) =>
+          !state && !workoutFinished ? null : setOpen(state)
+        }
       >
         <DrawerTrigger asChild>
-          <Button className="w-3/4 rounded-2xl" onClick={() => setOpen(true)}>
-            Start empty workout
-          </Button>
+          <Button className="w-3/4 rounded-2xl">Start empty workout</Button>
         </DrawerTrigger>
         <DrawerContent className="bg-background flex h-[90vh] p-4">
           <DrawerHeader className="flex flex-col items-center">
             <DrawerTitle>Current Session</DrawerTitle>
             <DrawerDescription>Add exercises to your workout</DrawerDescription>
             <WorkoutTimer seconds={seconds} setSeconds={setSeconds} />
-
-            <Separator
-              className="bg-primary mt-2 w-full rounded-2xl p-[2px]"
-              orientation="horizontal"
-            />
+            <Separator className="bg-primary mt-2 w-full rounded-2xl p-[2px]" />
           </DrawerHeader>
+
           <div className="flex-1 overflow-y-auto">
             <ScrollArea className="h-full w-full space-y-4 pr-2">
               {workoutExercises.map((exercise) => (
@@ -103,6 +123,7 @@ export default function WorkoutPage() {
               ))}
             </ScrollArea>
           </div>
+
           <div className="flex flex-col items-center">
             <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
               <SheetTrigger asChild>
@@ -122,6 +143,7 @@ export default function WorkoutPage() {
 
           <DrawerFooter className="mt-auto pt-4">
             <Button
+              className="rounded-2xl"
               onClick={() => {
                 createWorkout.mutate(
                   {
@@ -136,35 +158,75 @@ export default function WorkoutPage() {
                   },
                   {
                     onSuccess: () => {
-                      console.log("Workout saved!");
                       clearWorkout();
                       setSeconds(0);
                       setOpen(false);
                       setWorkoutFinished(true);
+
+                      void utils.workout.getAllForUser.invalidate();
                     },
-                    onError: (error) => {
-                      console.error("💥 Workout create error:", error);
-                    },
+                    onError: (error) =>
+                      console.error("💥 Workout create error:", error),
                   },
                 );
               }}
-              className="rounded-2xl"
             >
               Complete workout <Send />
             </Button>
           </DrawerFooter>
         </DrawerContent>
       </Drawer>
+
+      {/* START PREDEFINED WORKOUT */}
+      <Sheet open={templateSheetOpen} onOpenChange={setTemplateSheetOpen}>
+        <SheetTrigger asChild>
+          <Button className="mt-4 w-3/4 rounded-2xl">
+            Start predefined workout
+          </Button>
+        </SheetTrigger>
+        <SheetContent side="bottom" className="h-[100vh] p-4">
+          <SheetHeader>
+            <SheetTitle>Select a workout template</SheetTitle>
+          </SheetHeader>
+
+          <div className="mt-4 flex flex-col gap-2">
+            {templates.length === 0 ? (
+              <p className="text-muted-foreground text-center text-sm">
+                No templates yet. Create one below!
+              </p>
+            ) : (
+              templates.map((template) => (
+                <Button
+                  key={template.id}
+                  variant="outline"
+                  onClick={() => loadTemplate(template.id)}
+                >
+                  {template.name}
+                </Button>
+              ))
+            )}
+            <Button
+              variant="secondary"
+              onClick={() => {
+                setTemplateSheetOpen(false);
+                setTemplateModalOpen(true);
+              }}
+              className="mt-2"
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Create Template
+            </Button>
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      {/* WORKOUT HISTORY */}
       <Drawer open={historyOpen} onOpenChange={setHistoryOpen}>
         <DrawerTrigger asChild>
-          <Button
-            className="mt-4 w-3/4 rounded-2xl"
-            onClick={() => setHistoryOpen(true)}
-          >
-            View Workout History
+          <Button className="mt-4 w-3/4 rounded-2xl">
+            View workout history
           </Button>
         </DrawerTrigger>
-
         <DrawerContent className="bg-background flex h-[90vh] p-4">
           <DrawerHeader className="flex flex-col items-center">
             <DrawerTitle>Workout History</DrawerTitle>
@@ -221,6 +283,15 @@ export default function WorkoutPage() {
           </div>
         </DrawerContent>
       </Drawer>
+
+      {/* TEMPLATE EDITOR MODAL */}
+      <TemplateEditorModal
+        open={templateModalOpen}
+        onClose={() => {
+          setTemplateModalOpen(false);
+          void utils.workoutTemplate.getTemplates.invalidate();
+        }}
+      />
     </div>
   );
 }
