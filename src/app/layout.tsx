@@ -10,8 +10,15 @@ import { WorkoutProvider } from "@/context/workoutContext";
 
 export const metadata: Metadata = {
   title: "Hyfit",
-  description: "Hyfit : Your gym and diet tracker",
-  icons: [{ rel: "icon", url: "/favicon.ico" }],
+  description: "Hyfit: Your gym and diet tracker",
+  manifest: "/manifest.json",
+  themeColor: "#000000",
+  icons: [
+    { rel: "icon", url: "/favicon.ico" },
+    { rel: "apple-touch-icon", url: "/icon-192x192.png" },
+    { rel: "icon", url: "/icon-192x192.png", sizes: "192x192" },
+    { rel: "icon", url: "/icon-512x512.png", sizes: "512x512" },
+  ],
 };
 
 const geist = Geist({
